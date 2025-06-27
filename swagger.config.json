@@ -12,7 +12,7 @@
   "paths": {
     "/api/file": {
       "get": {
-        "summary": "Kullanıcıları listeler",
+        "summary": "Resimleri Listeler",
         "responses": {
           "200": {
             "description": "Başarılı"
@@ -21,6 +21,15 @@
       },
       "post": {
         "summary": "Dosya yükleme",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "fileType",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {

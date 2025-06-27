@@ -1,0 +1,16 @@
+export const allowedExtensions = [
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".gif",
+  ".webp",
+  ".pdf",
+  ".txt",
+  ".docx",
+  ".xlsx",
+  ".pptx",
+  ".csv",
+  ".zip",
+  ".rar",
+  ".mp4",
+];

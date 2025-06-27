@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
 import fs from "fs/promises";
+import path from "path";
+import sharp from "sharp";
+import { fileService } from "../services";
+import { fileDto } from "../dto/file.dto";
 
 /**
  * @summary Retrieves a file by its ID.
@@ -8,7 +12,8 @@ const getFileController = async (req: Request, res: Response) => {
   // Logic to retrieve a file
 
   const file = await fs.readFile(
-    `${process.cwd()}/public/uploads/${req.params.id}`
+    `${process.cwd()}/public/uploads/${req.params.id}`,
+    {}
   );
 
   if (!file) {
@@ -41,29 +46,49 @@ const getAllFilesController = async (req: Request, res: Response) => {
 
 const createFileController = async (req: Request, res: Response) => {
   try {
+    // Dosya var mı yok mu kontrol et
     if (!req.file) {
-      res.status(400).json({ message: "No file uploaded" });
-      throw (new Error("No file uploaded").name = "FileUploadError");
+      const err = new Error("No file uploaded");
+      err.name = "FileUploadError";
+      throw err;
     }
 
-    const filePath = process.cwd() + "/" + req.file.destination;
-    await fs.rename(
-      filePath + req.file.filename,
-      filePath + req.file.originalname
-    );
+    const {
+      fileFormat,
+      fileName,
+      uploadPath,
+      imageQuality,
+    }: {
+      fileFormat?: keyof sharp.FormatEnum;
+      fileName?: string;
+      uploadPath?: string;
+      imageQuality?: string;
+    } = req.query;
+
+    console.log("Creating:", req.file);
+
+    const createdFile = await fileService.createFile(req.file, {
+      fileFormat,
+      uploadPath,
+      customFileName: fileName,
+      imageQuality,
+    });
 
     res.status(200).json({
+      ...fileDto,
+      status: true,
       message: "File uploaded successfully",
-      file: req.file,
-      files: req.files,
+      file: createdFile,
     });
   } catch (err) {
     const error = err as Error;
+    console.log(error);
+
     if (error.name === "FileUploadError") {
-      res.status(400).json({ message: "No file uploaded" });
-    } else {
-      res.status(500).json({ message: "File upload failed" });
+      res.status(400).json({ ...fileDto, message: "No file uploaded" });
     }
+
+    res.status(500).json({ ...fileDto, message: "File upload failed" });
   }
 };
 
