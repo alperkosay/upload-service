@@ -4,6 +4,7 @@ import cors from "cors";
 import { routes } from "./router";
 import env from "./configs/env";
 import swaggerUi from "swagger-ui-express";
+import loggerMiddleware from "./middleware/logger.middleware";
 const swaggerSpec = require("../swagger.config.json");
 
 const app = express();
@@ -14,20 +15,21 @@ app.use(helmet());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
+app.use(loggerMiddleware);
 //#endregion
 
 //#region Routes
 
 //#region Request Logging Middleware
-app.use((req: Request, res: Response, next: NextFunction) => {
-  const start = process.hrtime();
-  res.on("finish", () => {
-    const diff = process.hrtime(start);
-    const timeInMs = diff[0] * 1000 + diff[1] / 1e6;
-    console.log(`${req.method} ${req.originalUrl} - ${timeInMs.toFixed(2)} ms`);
-  });
-  next();
-});
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//   const start = process.hrtime();
+//   res.on("finish", () => {
+//     const diff = process.hrtime(start);
+//     const timeInMs = diff[0] * 1000 + diff[1] / 1e6;
+//     console.log(`${req.method} ${req.originalUrl} - ${timeInMs.toFixed(2)} ms`);
+//   });
+//   next();
+// });
 //#endregion
 
 //#region Swagger UI setup

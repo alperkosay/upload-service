@@ -44,6 +44,10 @@ const getAllFilesController = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ *
+ * @summary Creating single or multiple files
+ */
 const createFileController = async (req: Request, res: Response) => {
   try {
     // Dosya var mı yok mu kontrol et

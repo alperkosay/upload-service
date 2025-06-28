@@ -24,7 +24,14 @@
         "parameters": [
           {
             "in": "query",
-            "name": "fileType",
+            "name": "fileFormat",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fileName",
             "schema": {
               "type": "string"
             }
