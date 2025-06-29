@@ -2,24 +2,40 @@ import path from "path";
 import sharp from "sharp";
 import { allowedExtensions } from "../consts/file.consts";
 import fs from "fs/promises";
+import { FileUploadOptions } from "../types/file.type";
+import logger from "../utils/logger";
 
-type options = {
-  uploadPath?: string;
-  fileFormat?: keyof sharp.FormatEnum;
-  customFileName?: string;
-  imageQuality?: string;
+//#region Get File
+const getFile = async (
+  fileName: string
+): Promise<Buffer<ArrayBufferLike> | null> => {
+  try {
+    const file = await fs.readFile(
+      `${process.cwd()}/public/uploads/${fileName}`,
+      {}
+    );
+
+    return file;
+  } catch (error) {
+    logger.error("Error reading file:", error);
+    return null;
+  }
 };
+//#endregion
 
-const createFile = async (
-  file: Express.Multer.File,
-  options: options = {}
-): Promise<{
+//#region Create File
+type CreateFileResponse = {
   fullPath: string;
   fileName?: string;
   fileSize: number;
   fileWidth?: number;
   fileHeight?: number;
-} | null> => {
+};
+
+const createFile = async (
+  file: Express.Multer.File,
+  options: FileUploadOptions = {}
+): Promise<CreateFileResponse | null> => {
   const uploadDir = path.join(process.cwd(), "public", "uploads");
   const fileName =
     options.customFileName ??
@@ -65,6 +81,9 @@ const createFile = async (
   }
 };
 
+//#endregion
+
 export default {
+  getFile,
   createFile,
 };

@@ -4,17 +4,14 @@ import path from "path";
 import sharp from "sharp";
 import { fileService } from "../services";
 import { fileDto } from "../dto/file.dto";
+import { FileUploadOptions } from "../types/file.type";
 
 /**
  * @summary Retrieves a file by its ID.
  */
 const getFileController = async (req: Request, res: Response) => {
   // Logic to retrieve a file
-
-  const file = await fs.readFile(
-    `${process.cwd()}/public/uploads/${req.params.id}`,
-    {}
-  );
+  const file = await fileService.getFile(req.params.id);
 
   if (!file) {
     res.status(404).json({ message: "File not found" });
@@ -59,22 +56,17 @@ const createFileController = async (req: Request, res: Response) => {
 
     const {
       fileFormat,
-      fileName,
+      customFileName,
       uploadPath,
       imageQuality,
-    }: {
-      fileFormat?: keyof sharp.FormatEnum;
-      fileName?: string;
-      uploadPath?: string;
-      imageQuality?: string;
-    } = req.query;
+    }: FileUploadOptions = req.query;
 
     console.log("Creating:", req.file);
 
     const createdFile = await fileService.createFile(req.file, {
       fileFormat,
       uploadPath,
-      customFileName: fileName,
+      customFileName,
       imageQuality,
     });
 
